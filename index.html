@@ -6,157 +6,204 @@
     <title>ChronosPie</title>
     
     <meta name="theme-color" content="#020617">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJkZWZhdWx0X2xvY2FsZSI6ICJwdCIsCiAgIm5hbWUiOiAiQ2hyb25vc1BpZSIsCiAgInNob3J0X25hbWUiOiAiQ2hyb25vcyIsCiAgImRlc2NyaXB0aW9uIjogIk1hcGVhbWVudG8gZGUgVGVtcG8iLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzAyMDYxNyIsCiAgInRoZW1lX2NvbG9yIjogIzAyMDYxNyIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImh0dHBzOi8vY2RuLWljb25zLXBuZy5mbGF0aWNvbi5jb20vNTEyLzI1LzI1NjU3LnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIiwKICAgICAgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIgogICAgfQogIF0KfQ==">
+    
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJkZWZhdWx0X2xvY2FsZSI6ICJwdCIsCiAgIm5hbWUiOiAiQ2hyb25vc1BpZSIsCiAgInNob3J0X25hbWUiOiAiQ2hyb25vcyIsCiAgImRlc2NyaXB0aW9uIjogIk1hcGVhbWVudG8gZGUgVGVtcG8iLAogICJzdGFydF91cmwiOiAiLi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIzAyMDYxNyIsCiAgInRoZW1lX2NvbG9yIjogIzAyMDYxNyIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImh0dHBzOi8vaW1ndXIuY29tL3ZqYTh4S0QucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9CiAgXQp9">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;900&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
-        :root { --bg: #020617; --card: rgba(30, 41, 59, 0.8); --text: #f8fafc; --cyan: #22d3ee; }
-        .light-mode { --bg: #f1f5f9; --card: rgba(255, 255, 255, 0.9); --text: #0f172a; }
+        :root { --bg: #020617; --card: rgba(30, 41, 59, 0.7); --text: #f8fafc; --cyan: #22d3ee; }
+        .light-mode { --bg: #f8fafc; --card: rgba(255, 255, 255, 0.9); --text: #020617; }
         body { background-color: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; transition: 0.3s; overflow-x: hidden; }
-        .glass-card { background: var(--card); backdrop-filter: blur(20px); border: 1px solid rgba(34, 211, 238, 0.15); border-radius: 2.5rem; }
-        #onboarding { position: fixed; inset: 0; z-index: 100; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
-        .step { display: none; text-align: center; animation: slideIn 0.5s ease; }
+        .glass-card { background: var(--card); backdrop-filter: blur(15px); border: 1px solid rgba(34, 211, 238, 0.1); border-radius: 2rem; }
+        
+        /* Onboarding Corrigido */
+        #onboarding { position: fixed; inset: 0; z-index: 1000; background: var(--bg); display: none; align-items: center; justify-content: center; padding: 20px; }
+        #onboarding.show { display: flex; }
+        
+        .step { display: none; text-align: center; animation: fadeIn 0.5s ease; }
         .step.active { display: block; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .nav-btn { opacity: 0.5; transition: 0.3s; font-weight: 800; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .nav-btn { opacity: 0.4; transition: 0.3s; font-size: 10px; font-weight: 900; text-transform: uppercase; }
         .nav-btn.active { opacity: 1; color: var(--cyan); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-4 pb-24">
+<body class="min-h-screen flex flex-col items-center p-4 pb-28">
 
     <div id="onboarding">
         <div id="step-1" class="step active space-y-6">
-            <div class="text-6xl mb-4">🥧</div>
-            <h1 class="text-4xl font-black italic uppercase">Bem-vindo ao <span class="text-cyan-400">ChronosPie</span></h1>
-            <p class="text-slate-400">Seu tempo é uma torta. Vamos ver como você está dividindo os pedaços?</p>
-            <button onclick="nextStep(2)" class="bg-cyan-500 text-black px-8 py-4 rounded-2xl font-black uppercase shadow-lg shadow-cyan-500/20">Próximo</button>
+            <div class="text-7xl">🥧</div>
+            <h1 class="text-4xl font-black italic uppercase leading-none">Chronos<span class="text-cyan-400">Pie</span></h1>
+            <p class="text-slate-400 text-sm">Pronto para dominar seu tempo?</p>
+            <button onclick="nextStep(2)" class="bg-cyan-500 text-black px-10 py-4 rounded-full font-black uppercase shadow-xl">Próximo</button>
         </div>
         <div id="step-2" class="step space-y-6">
-            <div class="text-6xl mb-4">📲</div>
-            <h1 class="text-3xl font-black uppercase">Instale no Celular</h1>
-            <p class="text-slate-400">Clique nos três pontinhos do navegador e em <b>"Instalar Aplicativo"</b> para ter o Chronos na sua tela inicial!</p>
-            <button onclick="finishTutorial()" class="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-8 py-4 rounded-2xl font-black uppercase">Começar Agora</button>
+            <div class="text-7xl">📲</div>
+            <h1 class="text-3xl font-black uppercase">Instale Agora</h1>
+            <p class="text-slate-400 text-sm">Clique em "Instalar" ou nos 3 pontinhos do Chrome para salvar no seu celular como um app nativo!</p>
+            <button onclick="finishTutorial()" class="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-10 py-4 rounded-full font-black uppercase">Começar!</button>
         </div>
     </div>
 
-    <header id="header" class="hidden max-w-md w-full flex justify-between items-center mb-6 mt-2 px-2">
-        <h1 class="text-2xl font-black italic tracking-tighter">CHRONOS<span class="text-cyan-400">PIE</span></h1>
-        <button onclick="toggleTheme()" class="p-2 glass-card !rounded-full">
-            <span id="theme-icon">🌙</span>
-        </button>
+    <header id="header" class="max-w-md w-full flex justify-between items-center mb-6 mt-2">
+        <h1 class="text-xl font-black italic tracking-tighter">CHRONOS<span class="text-cyan-400">PIE</span></h1>
+        <button onclick="toggleTheme()" class="w-10 h-10 glass-card flex items-center justify-center !rounded-full">🌙</button>
     </header>
 
-    <div id="app-page" class="page max-w-md w-full space-y-4">
-        <div class="glass-card p-6 shadow-2xl space-y-4 text-center">
-             <div class="relative flex justify-center">
-                <canvas id="chart" style="max-width: 160px;"></canvas>
-                <div class="absolute inset-0 flex flex-col items-center justify-center mt-2">
-                    <span id="pct" class="text-3xl font-black">0%</span>
-                    <span id="t-ocupado" class="text-[8px] uppercase font-bold opacity-50">Status</span>
+    <main id="app-page" class="page active max-w-md w-full space-y-4">
+        <div class="glass-card p-6 text-center space-y-4">
+            <div class="relative flex justify-center">
+                <canvas id="chart" style="max-width: 170px;"></canvas>
+                <div class="absolute inset-0 flex flex-col items-center justify-center mt-3">
+                    <span id="pct" class="text-4xl font-black">0%</span>
+                    <span class="text-[9px] font-black opacity-40 uppercase tracking-widest">Aproveitado</span>
                 </div>
             </div>
-            <button onclick="share()" class="text-[10px] font-bold text-green-500 uppercase flex items-center justify-center gap-2 mx-auto">WhatsApp 📲</button>
+            <button onclick="share()" class="bg-green-500/10 text-green-500 text-[10px] font-black py-2 px-6 rounded-full border border-green-500/20 uppercase flex items-center gap-2 mx-auto">Compartilhar WhatsApp 📲</button>
         </div>
 
         <div class="glass-card p-6 space-y-3">
-            <input type="text" id="taskName" placeholder="O que você fez?" class="w-full p-4 rounded-2xl bg-black/20 border border-white/10 outline-none text-white">
+            <input type="text" id="taskName" placeholder="O que você fez?" class="w-full p-4 rounded-2xl bg-black/20 border border-white/5 outline-none text-white font-bold">
             <div class="flex gap-2">
-                <input type="number" id="h" placeholder="Horas" class="w-1/2 p-4 rounded-2xl bg-black/20 border border-white/10 text-center text-white">
-                <input type="number" id="m" placeholder="Min" class="w-1/2 p-4 rounded-2xl bg-black/20 border border-white/10 text-center text-white">
+                <input type="number" id="h" placeholder="Horas" class="w-1/2 p-4 rounded-2xl bg-black/20 border border-white/5 text-center text-white font-bold">
+                <input type="number" id="m" placeholder="Min" class="w-1/2 p-4 rounded-2xl bg-black/20 border border-white/5 text-center text-white font-bold">
             </div>
-            <button onclick="add()" class="w-full bg-cyan-500 text-black py-4 rounded-2xl font-black uppercase shadow-lg">Registrar</button>
+            <button onclick="add()" class="w-full bg-cyan-500 text-black py-4 rounded-2xl font-black uppercase shadow-lg shadow-cyan-500/20">Registrar</button>
         </div>
-        <ul id="list" class="space-y-2 max-h-48 overflow-y-auto"></ul>
-    </div>
+        <ul id="list" class="space-y-2 max-h-40 overflow-y-auto"></ul>
+    </main>
 
-    <div id="pro-page" class="page max-w-md w-full">
+    <main id="pro-page" class="page max-w-md w-full">
         <div class="glass-card p-8 text-center space-y-6">
-            <h2 class="text-xl font-black uppercase text-cyan-400 italic">Upgrade Pro</h2>
+            <h2 class="text-2xl font-black italic text-cyan-400 uppercase">Upgrade Pro</h2>
             <div id="pro-off" class="space-y-4">
-                <div class="p-4 bg-black/20 rounded-3xl border border-white/5">
-                    <p class="text-[10px] font-bold opacity-30 mb-2 uppercase">Pix de Apoio</p>
-                    <p class="text-lg font-mono font-bold">42613586893</p>
-                    <button onclick="copy()" class="text-cyan-400 text-[10px] font-bold uppercase mt-2">Copiar Chave</button>
+                <div class="p-6 bg-black/40 rounded-[2rem] border-2 border-dashed border-cyan-500/20">
+                    <p class="text-[9px] font-black opacity-40 mb-2 uppercase tracking-tighter">Chave Pix (CPF)</p>
+                    <p class="text-lg font-mono font-bold text-white">42613586893</p>
+                    <button onclick="copy()" class="text-cyan-400 text-[10px] font-black uppercase mt-3 underline">Copiar CPF</button>
                 </div>
-                <input type="text" id="key" placeholder="Código" class="w-full p-3 rounded-xl bg-black/20 text-center border border-white/10 text-white">
-                <button onclick="unlock()" class="w-full bg-white text-black py-3 rounded-xl font-bold uppercase text-xs">Ativar</button>
+                <input type="text" id="key" placeholder="Código VIP" class="w-full p-4 rounded-xl bg-black/20 text-center border border-white/10 text-white font-bold">
+                <button onclick="unlock()" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase text-xs">Ativar Modo Pro</button>
             </div>
             <div id="pro-on" class="hidden text-center text-yellow-400 font-bold uppercase">🚀 Licença Pro Ativada</div>
         </div>
-    </div>
+    </main>
 
-    <div id="perfil-page" class="page max-w-md w-full">
+    <main id="perfil-page" class="page max-w-md w-full">
         <div class="glass-card p-8 text-center space-y-6">
-            <div class="w-20 h-20 bg-cyan-500/10 rounded-full mx-auto flex items-center justify-center text-3xl mb-2 border border-cyan-500/20">😎</div>
-            <input type="text" id="nameInput" oninput="saveName(this.value)" placeholder="Seu Nome" class="w-full p-3 rounded-xl bg-black/20 border border-white/10 text-center text-white">
-            <select onchange="changeLang(this.value)" class="w-full p-3 rounded-xl bg-black/20 border border-white/10 text-xs text-white">
-                <option value="pt">Português 🇧🇷</option>
-                <option value="en">English 🇺🇸</option>
-                <option value="es">Español 🇪🇸</option>
-            </select>
-            <button onclick="reset()" class="text-[9px] opacity-30 font-bold uppercase tracking-[4px]">Zerar Tudo</button>
+            <div class="w-24 h-24 bg-cyan-500/10 rounded-full mx-auto flex items-center justify-center text-5xl border-2 border-cyan-500/20">😎</div>
+            <input type="text" id="nameInput" oninput="saveName(this.value)" placeholder="Seu Nome" class="w-full p-4 rounded-2xl bg-black/20 border border-white/5 text-center text-white font-black text-xl uppercase">
+            
+            <button id="install-btn" style="display:none;" onclick="installApp()" class="w-full bg-blue-500 text-white py-4 rounded-2xl font-black uppercase text-xs">Baixar App no Celular 📥</button>
+            
+            <button onclick="reset()" class="text-[10px] font-black opacity-20 uppercase tracking-[5px] mt-10">Zerar histórico</button>
         </div>
-    </div>
+    </main>
 
-    <nav id="navbar" class="hidden fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-2xl h-20 flex justify-around items-center px-4 border-t border-white/5 z-50">
-        <button onclick="showPage('app-page', this)" class="nav-btn active flex flex-col items-center"><span class="text-[10px] uppercase">Mapa</span></button>
-        <button onclick="showPage('pro-page', this)" class="nav-btn flex flex-col items-center"><span class="text-[10px] uppercase">Upgrade</span></button>
-        <button onclick="showPage('perfil-page', this)" class="nav-btn flex flex-col items-center"><span class="text-[10px] uppercase">Eu</span></button>
+    <nav id="navbar" class="fixed bottom-6 left-6 right-6 h-20 glass-card !rounded-full flex justify-around items-center px-4 z-50">
+        <button onclick="showPage('app-page', this)" class="nav-btn active flex flex-col items-center">Mapa</button>
+        <button onclick="showPage('pro-page', this)" class="nav-btn flex flex-col items-center">Upgrade</button>
+        <button onclick="showPage('perfil-page', this)" class="nav-btn flex flex-col items-center">Perfil</button>
     </nav>
 
     <script>
-        // REGISTRO DO SERVICE WORKER PARA FUNCIONAR OFFLINE (APP)
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZSA9PiBlLndhaXRVbnRpbChjYWNoZXMub3BlbignY2hyb25vcycpLnRoZW4oYyA9PiBjLmFkZEFsbChbJy4nLCAnaW5kZXguaHRtbCddKSkpKTsKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGUgPT4gZS5yZXNwb25kV2l0aChjYWNoZXMubWF0Y2goZS5yZXF1ZXN0KS50aGVuKHIgPT4gciB8fCBmZXRjaChlLnJlcXVlc3QpKSkpOw==');
+        // LÓGICA PWA - CAPTURAR EVENTO DE INSTALAÇÃO
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-btn').style.display = 'block';
+        });
+
+        async function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') deferredPrompt = null;
+            }
         }
 
-        let state = JSON.parse(localStorage.getItem('cp_pwa_state')) || {
-            name: 'Usuário', tasks: [], pro: false, theme: 'dark', lang: 'pt', tutorialSeen: false
+        let state = JSON.parse(localStorage.getItem('cp_final_state_v2')) || {
+            name: 'Mestre', tasks: [], pro: false, theme: 'dark', lang: 'pt', tutorialSeen: false
         };
 
-        const i18n = {
-            pt: { add: "Registrar", busy: "Ocupado", share: "Mapeei meu dia no ChronosPie! " },
-            en: { add: "Register", busy: "Busy", share: "Mapping my day with ChronosPie! " },
-            es: { add: "Registrar", busy: "Ocupado", share: "¡Mapeando mi día! " }
-        };
-
-        function save() { localStorage.setItem('cp_pwa_state', JSON.stringify(state)); render(); }
+        function save() { localStorage.setItem('cp_final_state_v2', JSON.stringify(state)); render(); }
         function nextStep(s) { document.querySelectorAll('.step').forEach(el => el.classList.remove('active')); document.getElementById('step-' + s).classList.add('active'); }
-        function finishTutorial() { state.tutorialSeen = true; document.getElementById('onboarding').style.display = 'none'; document.getElementById('header').classList.remove('hidden'); document.getElementById('navbar').classList.remove('hidden'); document.getElementById('app-page').classList.add('active'); save(); }
-        function toggleTheme() { state.theme = state.theme === 'dark' ? 'light' : 'dark'; document.body.classList.toggle('light-mode', state.theme === 'light'); document.getElementById('theme-icon').innerText = state.theme === 'dark' ? '🌙' : '☀️'; save(); }
-        function showPage(id, btn) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-        function add() { if(!state.pro && state.tasks.length >= 3) return alert("Limite Free atingido!"); const n = document.getElementById('taskName').value; const h = parseInt(document.getElementById('h').value || 0), m = parseInt(document.getElementById('m').value || 0); if(n && (h+m) > 0) { state.tasks.push({n, v: (h*60)+m, c: `hsl(${Math.random()*360}, 60%, 50%)`}); document.getElementById('taskName').value = ''; save(); } }
-        function unlock() { if(document.getElementById('key').value.toUpperCase() === 'PIX777') { state.pro = true; save(); alert("MODO PRO ATIVADO!"); } else alert("Código incorreto!"); }
+        
+        function finishTutorial() { 
+            state.tutorialSeen = true; 
+            document.getElementById('onboarding').classList.remove('show'); 
+            save(); 
+        }
+
+        function toggleTheme() { 
+            state.theme = state.theme === 'dark' ? 'light' : 'dark'; 
+            document.body.classList.toggle('light-mode', state.theme === 'light'); 
+            save(); 
+        }
+
+        function showPage(id, btn) { 
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
+            document.getElementById(id).classList.add('active'); 
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); 
+            btn.classList.add('active'); 
+        }
+
+        function add() { 
+            if(!state.pro && state.tasks.length >= 3) return alert("Limite atingido! Ative o Pro."); 
+            const n = document.getElementById('taskName').value; 
+            const h = parseInt(document.getElementById('h').value || 0), m = parseInt(document.getElementById('m').value || 0); 
+            if(n && (h*60+m) > 0) { 
+                state.tasks.push({n, v: (h*60)+m, c: `hsl(${Math.random()*360}, 60%, 50%)`}); 
+                document.getElementById('taskName').value = ''; document.getElementById('h').value = ''; document.getElementById('m').value = ''; 
+                save(); 
+            } 
+        }
+
+        function share() {
+            let total = state.tasks.reduce((s, a) => s + a.v, 0);
+            let pct = Math.min(100, (total/14.4)).toFixed(0);
+            let msg = `Olha como está minha produtividade no ChronosPie! 🥧\n📍 Foco em ${pct}% do dia!\n\n👉 https://joserobertoleitejunior-a11y.github.io/CHRONOSPIE.COM/`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+        }
+
+        function unlock() { if(document.getElementById('key').value.toUpperCase() === 'PIX777') { state.pro = true; save(); alert("MODO PRO ATIVADO!"); } }
         function saveName(v) { state.name = v; save(); }
-        function changeLang(l) { state.lang = l; save(); }
         function copy() { navigator.clipboard.writeText('42613586893'); alert("CPF Copiado!"); }
-        function reset() { if(confirm("Apagar tudo?")) { state.tasks = []; save(); } }
-        function share() { let total = state.tasks.reduce((s, a) => s + a.v, 0); let txt = i18n[state.lang].share + `Foco em ${Math.min(100, (total/14.4)).toFixed(0)}% do dia.`; window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`); }
+        function reset() { if(confirm("Deseja zerar o dia?")) { state.tasks = []; save(); } }
 
         let chart;
         function render() {
             const list = document.getElementById('list'); list.innerHTML = '';
             let total = state.tasks.reduce((s, a) => s + a.v, 0);
-            document.getElementById('t-ocupado').innerText = `${i18n[state.lang].busy}: ${Math.floor(total/60)}h ${total%60}m`;
             document.getElementById('pct').innerText = Math.min(100, (total/14.4)).toFixed(0) + '%';
+            document.getElementById('nameInput').value = state.name;
+
             state.tasks.slice().reverse().forEach((t) => {
-                list.innerHTML += `<li class="flex justify-between items-center p-4 glass-card !rounded-2xl text-[11px] font-bold"><span style="color:${t.c}">${t.n.toUpperCase()}</span><span class="opacity-50">${Math.floor(t.v/60)}H ${t.v%60}M</span></li>`;
+                list.innerHTML += `<li class="flex justify-between items-center p-4 glass-card !rounded-2xl text-xs font-bold mb-2"><span style="color:${t.c}">${t.n.toUpperCase()}</span><span class="opacity-40">${Math.floor(t.v/60)}H ${t.v%60}M</span></li>`;
             });
+
             if(state.pro) { document.getElementById('pro-off').classList.add('hidden'); document.getElementById('pro-on').classList.remove('hidden'); }
+            
             const ctx = document.getElementById('chart').getContext('2d');
             if(chart) chart.destroy();
-            chart = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: [...state.tasks.map(a => a.v), 1440-total], backgroundColor: [...state.tasks.map(a => a.c), '#1e293b'], borderWidth: 0 }] }, options: { cutout: '85%', plugins: { legend: { display: false } } } });
+            chart = new Chart(ctx, { 
+                type: 'doughnut', 
+                data: { datasets: [{ data: [...state.tasks.map(a => a.v), 1440-total], backgroundColor: [...state.tasks.map(a => a.c), '#1e293b'], borderWidth: 0 }] }, 
+                options: { cutout: '85%', plugins: { legend: { display: false } } } 
+            });
         }
 
         window.onload = () => {
-            if(state.tutorialSeen) finishTutorial();
+            if(!state.tutorialSeen) document.getElementById('onboarding').classList.add('show');
             if(state.theme === 'light') document.body.classList.add('light-mode');
             render();
         };
