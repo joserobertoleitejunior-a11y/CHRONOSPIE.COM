@@ -2,263 +2,249 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChronosPie - Mastery OS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ChronosPie - Life Mapping</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;600;900&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #22d3ee; --gold: #fbbf24; }
-        body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
-        .font-tech { font-family: 'Orbitron', sans-serif; }
-        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(34, 211, 238, 0.1); border-radius: 2rem; }
-        .nav-btn { transition: 0.3s; opacity: 0.3; text-transform: uppercase; font-size: 9px; font-weight: 900; letter-spacing: 1px; }
-        .nav-btn.active { opacity: 1; color: var(--neon); }
+        :root { --bg: #020617; --card: rgba(30, 41, 59, 0.8); --text: #f8fafc; --cyan: #22d3ee; }
+        .light-mode { --bg: #f1f5f9; --card: rgba(255, 255, 255, 0.9); --text: #0f172a; }
+        
+        body { background-color: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; transition: 0.3s; overflow-x: hidden; }
+        .glass-card { background: var(--card); backdrop-filter: blur(20px); border: 1px solid rgba(34, 211, 238, 0.15); border-radius: 2.5rem; }
+        
+        /* Tutorial Animado */
+        #onboarding { position: fixed; inset: 0; z-index: 100; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
+        .step { display: none; text-align: center; animation: slideIn 0.5s ease; }
+        .step.active { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+
         .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.5s ease; }
+        .page.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .nav-btn { opacity: 0.5; transition: 0.3s; font-weight: 800; }
+        .nav-btn.active { opacity: 1; color: var(--cyan); }
     </style>
 </head>
-<body class="min-h-screen pb-28">
+<body class="min-h-screen flex flex-col items-center p-4 pb-24">
 
-    <header class="p-6 flex justify-between items-center max-w-md mx-auto">
-        <div class="flex items-center gap-2">
-            <div class="w-2 h-2 bg-cyan-500 rounded-full animate-pulse shadow-[0_0_8px_#22d3ee]"></div>
-            <p id="system-msg" class="text-[9px] font-bold text-slate-500 uppercase tracking-widest italic">Sistema de Auditoria Ativo</p>
+    <div id="onboarding">
+        <div id="step-1" class="step active space-y-6">
+            <div class="text-6xl mb-4">🥧</div>
+            <h1 class="text-4xl font-black italic uppercase">Bem-vindo ao <span class="text-cyan-400">ChronosPie</span></h1>
+            <p class="text-slate-400">Seu tempo é uma torta. Vamos ver como você está dividindo os pedaços?</p>
+            <button onclick="nextStep(2)" class="bg-cyan-500 text-black px-8 py-4 rounded-2xl font-black uppercase">Bora Começar!</button>
         </div>
-        <h1 class="font-tech text-lg italic tracking-tighter">CHRONOS<span class="text-cyan-400">PIE</span></h1>
+
+        <div id="step-2" class="step space-y-6">
+            <div class="text-6xl mb-4">✍️</div>
+            <h1 class="text-3xl font-black uppercase">Mapeamento Sem Erro</h1>
+            <p class="text-slate-400">Fez academia? Trabalhou? Dormiu? É só digitar e registrar o tempo. Simples assim.</p>
+            <button onclick="nextStep(3)" class="bg-cyan-500 text-black px-8 py-4 rounded-2xl font-black uppercase">Entendi!</button>
+        </div>
+
+        <div id="step-3" class="step space-y-6">
+            <div class="text-6xl mb-4">🎯</div>
+            <h1 class="text-3xl font-black uppercase">Domine seu Dia</h1>
+            <p class="text-slate-400">O gráfico te mostra onde seu tempo está "sumindo". O objetivo? 100% de consciência!</p>
+            <button onclick="finishTutorial()" class="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-8 py-4 rounded-2xl font-black uppercase">Acessar Meu Mapa 🚀</button>
+        </div>
+    </div>
+
+    <header id="header" class="hidden max-w-md w-full flex justify-between items-center mb-6 mt-2 px-2">
+        <h1 class="text-2xl font-black italic tracking-tighter">CHRONOS<span class="text-cyan-400">PIE</span></h1>
+        <button onclick="toggleTheme()" class="p-2 glass-card !rounded-full">
+            <span id="theme-icon">🌙</span>
+        </button>
     </header>
 
-    <main class="max-w-md mx-auto px-4">
-        
-        <section id="page-app" class="page active space-y-4">
-            <div class="glass p-6 text-center">
-                <div class="relative inline-block">
-                    <canvas id="chart" width="180" height="180"></canvas>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <span id="pct" class="font-tech text-3xl font-black text-white">0%</span>
-                        <span class="text-[7px] text-cyan-500 font-bold uppercase tracking-widest">Alocação</span>
-                    </div>
-                </div>
-                <div class="mt-4 flex justify-between text-[10px] font-bold text-slate-400 px-4">
-                    <span>STATUS: <span class="text-white">OPERACIONAL</span></span>
-                    <span>DISPONÍVEL: <span id="time-left" class="text-cyan-400">24h 00m</span></span>
+    <div id="app-page" class="page max-w-md w-full space-y-4">
+        <div class="glass-card p-6 shadow-2xl space-y-4 text-center">
+             <div class="relative flex justify-center">
+                <canvas id="chart" style="max-width: 160px;"></canvas>
+                <div class="absolute inset-0 flex flex-col items-center justify-center mt-2">
+                    <span id="pct" class="text-3xl font-black">0%</span>
+                    <span id="t-ocupado" class="text-[8px] uppercase font-bold opacity-50">Iniciando...</span>
                 </div>
             </div>
+            <button onclick="share()" class="text-[10px] font-bold text-green-500 uppercase flex items-center justify-center gap-2 mx-auto">
+                WhatsApp 📲
+            </button>
+        </div>
 
-            <div class="glass p-6 space-y-4">
-                <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Nova Entrada de Dados</p>
-                <input type="text" id="taskName" placeholder="Identificar Atividade..." class="w-full bg-slate-900/50 border border-slate-800 p-4 rounded-2xl outline-none focus:border-cyan-500 text-sm font-bold placeholder:text-slate-700">
-                
-                <div class="grid grid-cols-4 gap-2">
-                    <button onclick="quickAdd(15, 'Reset Mental')" class="bg-slate-900 border border-slate-800 py-2 rounded-xl text-[9px] font-bold">15m</button>
-                    <button onclick="quickAdd(60, 'Foco Profundo')" class="bg-slate-900 border border-slate-800 py-2 rounded-xl text-[9px] font-bold">1h</button>
-                    <button onclick="quickAdd(240, 'Bloco de Execução')" class="bg-slate-900 border border-slate-800 py-2 rounded-xl text-[9px] font-bold">4h</button>
-                    <button onclick="quickAdd(480, 'Recuperação')" class="bg-slate-900 border border-slate-800 py-2 rounded-xl text-[9px] font-bold text-cyan-400">8h</button>
-                </div>
-
-                <div class="flex gap-2">
-                    <input type="number" id="h" placeholder="Horas" class="w-1/2 bg-slate-900/50 border border-slate-800 p-4 rounded-2xl text-center font-tech text-xs">
-                    <input type="number" id="m" placeholder="Min" class="w-1/2 bg-slate-900/50 border border-slate-800 p-4 rounded-2xl text-center font-tech text-xs">
-                </div>
-                
-                <button onclick="add()" class="w-full bg-cyan-500 text-slate-950 font-black py-4 rounded-2xl shadow-lg shadow-cyan-500/20 active:scale-95 transition-all text-xs uppercase tracking-widest">Sincronizar Ciclo</button>
+        <div class="glass-card p-6 space-y-3">
+            <input type="text" id="taskName" placeholder="O que você fez?" class="w-full p-4 rounded-2xl bg-black/20 border border-white/10 outline-none focus:border-cyan-500">
+            <div class="flex gap-2">
+                <input type="number" id="h" placeholder="Horas" class="w-1/2 p-4 rounded-2xl bg-black/20 border border-white/10 text-center">
+                <input type="number" id="m" placeholder="Min" class="w-1/2 p-4 rounded-2xl bg-black/20 border border-white/10 text-center">
             </div>
+            <button onclick="add()" id="btn-add" class="w-full bg-cyan-500 text-black py-4 rounded-2xl font-black uppercase">Registrar Atividade</button>
+        </div>
+        <ul id="list" class="space-y-2 max-h-48 overflow-y-auto"></ul>
+    </div>
 
-            <div id="list" class="space-y-2 pb-6"></div>
-        </section>
-
-        <section id="page-pro" class="page space-y-4">
-            <div class="glass p-8 space-y-6">
-                <div id="pro-lock" class="text-center">
-                    <h3 class="font-tech text-yellow-500 text-lg tracking-widest uppercase">Acesso Restrito</h3>
-                    <p class="text-[11px] text-slate-400 mt-2 leading-relaxed italic">Desbloqueie a Auditoria de IA para identificar vazamentos de tempo e otimizar seu rendimento.</p>
-                    
-                    <div class="mt-8 bg-black/40 p-6 rounded-[2.5rem] border border-yellow-500/20">
-                        <p class="text-[9px] text-slate-500 font-bold uppercase mb-4 tracking-tighter italic">Transferência via PIX (CPF):</p>
-                        <p class="text-xl font-tech text-white mb-6">42613586893</p>
-                        <button onclick="copyPix()" class="w-full bg-white text-black py-3 rounded-xl font-bold text-xs uppercase mb-6 active:scale-95 transition-all">Copiar Chave</button>
-                        
-                        <div class="flex gap-2">
-                            <input type="text" id="key" placeholder="Código de Acesso" class="w-2/3 bg-slate-950 border border-slate-800 rounded-xl px-4 text-[10px] font-bold">
-                            <button onclick="unlock()" class="w-1/3 bg-yellow-500 text-black rounded-xl font-bold text-[10px] uppercase">Liberar</button>
-                        </div>
-                    </div>
+    <div id="pro-page" class="page max-w-md w-full">
+        <div class="glass-card p-8 text-center space-y-6">
+            <h2 class="text-xl font-black uppercase text-cyan-400 italic">Upgrade Pro</h2>
+            <div id="pro-off" class="space-y-4">
+                <p class="text-xs opacity-70">Desbloqueie o guia de performance e registros ilimitados.</p>
+                <div class="p-4 bg-black/20 rounded-3xl border border-white/5">
+                    <p class="text-[10px] font-bold opacity-30 mb-2 uppercase">Pix do Desenvolvedor</p>
+                    <p class="text-lg font-mono font-bold">42613586893</p>
+                    <button onclick="copy()" class="text-cyan-400 text-[10px] font-bold uppercase mt-2">Copiar Chave</button>
                 </div>
-
-                <div id="pro-active" class="hidden space-y-6">
-                    <div class="flex items-center justify-between border-b border-yellow-500/20 pb-4">
-                        <h3 class="font-tech text-yellow-500 text-sm">AUDITORIA DE IA</h3>
-                        <span class="text-[8px] bg-yellow-500 text-black px-2 py-0.5 rounded font-black">PREMIUM</span>
-                    </div>
-                    <div id="ai-feedback" class="space-y-4"></div>
-                    <button onclick="shareApp()" class="w-full border border-cyan-500/30 text-cyan-400 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest">Partilhar Métrica com Operadores</button>
-                </div>
+                <input type="text" id="key" placeholder="Insira o código" class="w-full p-3 rounded-xl bg-black/20 text-center border border-white/10">
+                <button onclick="unlock()" class="w-full bg-white text-black py-3 rounded-xl font-bold uppercase text-xs">Ativar</button>
             </div>
-        </section>
-
-        <section id="page-profile" class="page space-y-4">
-            <div class="glass p-8 space-y-8">
-                <div class="flex items-center gap-5">
-                    <div class="w-16 h-16 bg-gradient-to-br from-cyan-600 to-blue-900 rounded-3xl flex items-center justify-center font-tech text-xl shadow-[0_0_20px_rgba(8,145,178,0.3)] border border-cyan-400/30">ID</div>
-                    <div>
-                        <h2 id="disp-name" class="font-black text-xl italic uppercase tracking-tighter">Operador</h2>
-                        <p id="disp-rank" class="text-[8px] font-bold text-slate-500 uppercase tracking-[0.4em]">Classe: Recruta</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-black/60 p-5 rounded-3xl border border-white/5">
-                        <p class="text-[7px] text-slate-500 font-bold uppercase mb-1">Dias de Operação</p>
-                        <p id="life-days" class="font-tech text-lg text-white">---</p>
-                    </div>
-                    <div class="bg-black/60 p-5 rounded-3xl border border-white/5">
-                        <p class="text-[7px] text-slate-500 font-bold uppercase mb-1">Sincronizações</p>
-                        <p id="total-logs" class="font-tech text-lg text-white">0</p>
-                    </div>
-                </div>
-
-                <div class="space-y-5 pt-4">
-                    <div class="group">
-                        <label class="text-[8px] text-slate-600 font-black uppercase tracking-widest ml-1">Assinatura do Operador</label>
-                        <input type="text" id="p-name" oninput="saveP()" placeholder="Nome..." class="w-full bg-transparent border-b border-slate-800 p-2 text-sm font-bold text-cyan-400 outline-none focus:border-cyan-400 transition-all">
-                    </div>
-                    <div class="group">
-                        <label class="text-[8px] text-slate-600 font-black uppercase tracking-widest ml-1">Data de Início</label>
-                        <input type="date" id="p-birth" oninput="saveP()" class="w-full bg-transparent border-b border-slate-800 p-2 text-sm font-bold text-cyan-400 outline-none">
-                    </div>
-                </div>
+            <div id="pro-on" class="hidden text-left space-y-4">
+                <p class="text-yellow-400 font-bold uppercase text-center">🚀 Modo Pro Ativo</p>
+                <p class="text-[11px] opacity-80 leading-relaxed bg-white/5 p-4 rounded-2xl">Dica Pro: O tempo que você gasta registrando não deve ser maior que o tempo executando. Use o ChronosPie 3x ao dia para auditorias rápidas.</p>
             </div>
-        </section>
+        </div>
+    </div>
 
-    </main>
+    <div id="perfil-page" class="page max-w-md w-full">
+        <div class="glass-card p-8 space-y-6 text-center">
+            <div class="w-20 h-20 bg-cyan-500/10 rounded-full mx-auto flex items-center justify-center text-3xl mb-2 border border-cyan-500/20">😎</div>
+            <h2 id="p-name" class="text-xl font-bold uppercase italic">Usuário</h2>
+            <input type="text" id="nameInput" oninput="saveName(this.value)" placeholder="Como quer ser chamado?" class="w-full p-3 rounded-xl bg-black/20 border border-white/10 text-center">
+            
+            <select onchange="changeLang(this.value)" class="w-full p-3 rounded-xl bg-black/20 border border-white/10 text-xs">
+                <option value="pt">Português 🇧🇷</option>
+                <option value="en">English 🇺🇸</option>
+                <option value="es">Español 🇪🇸</option>
+            </select>
+            
+            <button onclick="reset()" class="text-[9px] opacity-30 font-bold uppercase tracking-[4px]">Zerar tudo</button>
+        </div>
+    </div>
 
-    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md glass h-20 flex justify-around items-center px-4 z-50 border-t border-cyan-500/20 shadow-2xl">
-        <button onclick="tab('page-app', this)" class="nav-btn active flex flex-col items-center">
-            <span class="mb-1 text-lg">⚙️</span>
-            <span>Comando</span>
+    <nav id="navbar" class="hidden fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-2xl h-20 flex justify-around items-center px-4 border-t border-white/5 z-50">
+        <button onclick="showPage('app-page', this)" class="nav-btn active flex flex-col items-center">
+            <span class="text-[10px] uppercase" id="nav-1">Mapa</span>
         </button>
-        <button onclick="tab('page-pro', this)" class="nav-btn flex flex-col items-center">
-            <span class="mb-1 text-lg">🧠</span>
-            <span>Auditoria</span>
+        <button onclick="showPage('pro-page', this)" class="nav-btn flex flex-col items-center">
+            <span class="text-[10px] uppercase" id="nav-2">Upgrade</span>
         </button>
-        <button onclick="tab('page-profile', this)" class="nav-btn flex flex-col items-center">
-            <span class="mb-1 text-lg">👤</span>
-            <span>Identidade</span>
+        <button onclick="showPage('perfil-page', this)" class="nav-btn flex flex-col items-center">
+            <span class="text-[10px] uppercase" id="nav-3">Eu</span>
         </button>
     </nav>
 
     <script>
-        let data = JSON.parse(localStorage.getItem('cp_final_v10') || '[]');
-        let isPro = localStorage.getItem('cp_pro_v10') === 'true';
-        let chart;
+        let state = JSON.parse(localStorage.getItem('cp_final_state')) || {
+            name: 'Usuário', tasks: [], pro: false, theme: 'dark', lang: 'pt', tutorialSeen: false
+        };
 
-        const protocols = [
-            "Protocolo 01: O tempo é o recurso mais escasso.",
-            "Protocolo 02: Elimine distrações ou elas eliminarão seus sonhos.",
-            "Protocolo 03: Foco não é dizer sim, é dizer não.",
-            "Protocolo 04: A consistência vence o talento."
-        ];
+        const i18n = {
+            pt: { add: "Registrar Atividade", busy: "Ocupado", nav1: "Mapa", nav2: "Upgrade", nav3: "Eu", share: "Mapeei meu dia no ChronosPie! " },
+            en: { add: "Register Task", busy: "Busy", nav1: "Map", nav2: "Upgrade", nav3: "Me", share: "Mapping my day with ChronosPie! " },
+            es: { add: "Registrar", busy: "Ocupado", nav1: "Mapa", nav2: "Upgrade", nav3: "Yo", share: "¡Mapeando mi día en ChronosPie! " }
+        };
 
-        function tab(id, btn) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            btn.classList.add('active');
+        function save() { localStorage.setItem('cp_final_state', JSON.stringify(state)); render(); }
+
+        function nextStep(s) {
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-' + s).classList.add('active');
         }
 
-        function shareApp() {
-            const text = "Estou auditando minha performance com o ChronosPie Mastery OS. Controle total: " + window.location.href;
-            if (navigator.share) navigator.share({ title: 'ChronosPie', text: text, url: window.location.href });
-            else window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`);
-        }
-
-        function quickAdd(mins, name) {
-            if(!isPro && data.length >= 3) return alert("Limite Free: Auditoria bloqueada em 3 logs.");
-            data.push({ n: name, v: mins, c: `hsl(${Math.random()*360}, 70%, 50%)`, d: new Date().toLocaleTimeString() });
+        function finishTutorial() {
+            state.tutorialSeen = true;
+            document.getElementById('onboarding').style.display = 'none';
+            document.getElementById('header').classList.remove('hidden');
+            document.getElementById('navbar').classList.remove('hidden');
+            document.getElementById('app-page').classList.add('active');
             save();
         }
 
+        function toggleTheme() {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            document.body.classList.toggle('light-mode', state.theme === 'light');
+            document.getElementById('theme-icon').innerText = state.theme === 'dark' ? '🌙' : '☀️';
+            save();
+        }
+
+        function showPage(id, btn) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
         function add() {
-            const name = document.getElementById('taskName').value;
+            if(!state.pro && state.tasks.length >= 3) return alert("Limite Free: 3 itens. Ative o Pro!");
+            const n = document.getElementById('taskName').value;
             const h = parseInt(document.getElementById('h').value || 0), m = parseInt(document.getElementById('m').value || 0);
-            const total = (h * 60) + m;
-            if(!isPro && data.length >= 3) return alert("Limite de Auditoria atingido.");
-            if(name && total > 0) {
-                data.push({ n: name, v: total, c: `hsl(${Math.random()*360}, 70%, 50%)`, d: new Date().toLocaleTimeString() });
+            if(n && (h+m) > 0) {
+                state.tasks.push({n, v: (h*60)+m, c: `hsl(${Math.random()*360}, 60%, 50%)`});
+                document.getElementById('taskName').value = '';
                 save();
-                document.getElementById('taskName').value = ''; document.getElementById('h').value = ''; document.getElementById('m').value = '';
             }
         }
 
-        function save() { localStorage.setItem('cp_final_v10', JSON.stringify(data)); render(); }
-        function del(i) { data.splice(i, 1); save(); }
+        function unlock() {
+            if(document.getElementById('key').value.toUpperCase() === 'PIX777') {
+                state.pro = true; save(); alert("MODO PRO ATIVADO!");
+            } else alert("Código incorreto!");
+        }
 
+        function saveName(v) { state.name = v; document.getElementById('p-name').innerText = v; save(); }
+        function changeLang(l) { state.lang = l; save(); }
+        function copy() { navigator.clipboard.writeText('42613586893'); alert("CPF Copiado!"); }
+        function reset() { if(confirm("Deseja apagar tudo?")) { state.tasks = []; save(); } }
+
+        function share() {
+            let total = state.tasks.reduce((s, a) => s + a.v, 0);
+            let txt = i18n[state.lang].share + `Foco em ${Math.min(100, (total/14.4)).toFixed(0)}% do dia.`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
+        }
+
+        let chart;
         function render() {
-            const list = document.getElementById('list');
-            list.innerHTML = '';
-            let total = data.reduce((s, a) => s + a.v, 0);
-            document.getElementById('time-left').innerText = `${Math.floor((1440-total)/60)}h ${(1440-total)%60}m`;
-            document.getElementById('pct').innerText = Math.min(100, (total/14.4)).toFixed(0) + '%';
-            document.getElementById('total-logs').innerText = data.length;
-            document.getElementById('system-msg').innerText = protocols[Math.floor(Math.random() * protocols.length)];
+            const l = i18n[state.lang];
+            document.getElementById('btn-add').innerText = l.add;
+            document.getElementById('nav-1').innerText = l.nav1;
+            document.getElementById('nav-2').innerText = l.nav2;
+            document.getElementById('nav-3').innerText = l.nav3;
 
-            data.forEach((item, i) => {
-                const div = document.createElement('div');
-                div.className = "glass p-4 flex justify-between items-center border-l-2 mb-2 bg-slate-900/40";
-                div.style.borderColor = item.c;
-                div.innerHTML = `<div><p class="text-[9px] font-black uppercase text-white tracking-widest">${item.n}</p><p class="text-[7px] text-slate-500 font-bold italic">${Math.floor(item.v/60)}h ${item.v%60}m</p></div><button onclick="del(${i})" class="text-slate-800 p-2">✕</button>`;
-                list.prepend(div);
+            const list = document.getElementById('list'); list.innerHTML = '';
+            let total = state.tasks.reduce((s, a) => s + a.v, 0);
+            document.getElementById('t-ocupado').innerText = `${l.busy}: ${Math.floor(total/60)}h ${total%60}m`;
+            document.getElementById('pct').innerText = Math.min(100, (total/14.4)).toFixed(0) + '%';
+            
+            state.tasks.slice().reverse().forEach((t) => {
+                list.innerHTML += `<li class="flex justify-between items-center p-4 glass-card !rounded-2xl text-[11px] font-bold">
+                    <span style="color:${t.c}">${t.n.toUpperCase()}</span>
+                    <span class="opacity-50">${Math.floor(t.v/60)}H ${t.v%60}M</span>
+                </li>`;
             });
 
-            if(isPro) {
-                document.getElementById('pro-lock').classList.add('hidden');
-                document.getElementById('pro-active').classList.remove('hidden');
-                genInsights(total);
+            if(state.pro) {
+                document.getElementById('pro-off').classList.add('hidden');
+                document.getElementById('pro-on').classList.remove('hidden');
             }
-            updateChart(total);
-            updateProfile();
-        }
 
-        function genInsights(total) {
-            const box = document.getElementById('ai-feedback');
-            let txt = total > 900 ? "⚠️ LATÊNCIA CRÍTICA: Sobrecarga detectada. Protocolo de descanso imediato sugerido." :
-                      total < 400 ? "ℹ️ BAIXO RENDIMENTO: Capacidade operacional ociosa. Aumente o foco." :
-                                   "🛡️ OTIMIZAÇÃO: Fluxo de alocação de tempo dentro da média de alta performance.";
-            box.innerHTML = `<div class='p-5 bg-white/5 rounded-3xl border border-white/5 text-[11px] leading-relaxed text-slate-300'>${txt}</div>`;
-        }
-
-        function saveP() {
-            const p = { n: document.getElementById('p-name').value, b: document.getElementById('p-birth').value };
-            localStorage.setItem('cp_profile_v10', JSON.stringify(p));
-            updateProfile();
-        }
-
-        function updateProfile() {
-            const p = JSON.parse(localStorage.getItem('cp_profile_v10') || '{}');
-            if(p.n) { document.getElementById('disp-name').innerText = p.n; document.getElementById('p-name').value = p.n; }
-            if(p.b) {
-                document.getElementById('p-birth').value = p.b;
-                const days = Math.floor((new Date() - new Date(p.b)) / 86400000);
-                document.getElementById('life-days').innerText = days.toLocaleString();
-                document.getElementById('disp-rank').innerText = days > 12000 ? "Classe: Mestre Chronos" : "Classe: Estrategista";
-            }
-        }
-
-        function updateChart(total) {
             const ctx = document.getElementById('chart').getContext('2d');
             if(chart) chart.destroy();
             chart = new Chart(ctx, {
                 type: 'doughnut',
-                data: { datasets: [{ data: [...data.map(a => a.v), total < 1440 ? 1440-total : 0], backgroundColor: [...data.map(a => a.c), '#0f172a'], borderWidth: 0 }] },
-                options: { cutout: '82%', plugins: { legend: { display: false } } }
+                data: { datasets: [{ data: [...state.tasks.map(a => a.v), 1440-total], backgroundColor: [...state.tasks.map(a => a.c), '#1e293b'], borderWidth: 0 }] },
+                options: { cutout: '85%', plugins: { legend: { display: false } } }
             });
         }
 
-        function copyPix() { navigator.clipboard.writeText('42613586893'); alert("CHAVE PIX COPIADA."); }
-        function unlock() { if(document.getElementById('key').value.toUpperCase()==='PIX777'){ localStorage.setItem('cp_pro_v10','true'); location.reload(); }}
-
-        window.onload = render;
+        window.onload = () => {
+            if(state.tutorialSeen) {
+                document.getElementById('onboarding').style.display = 'none';
+                document.getElementById('header').classList.remove('hidden');
+                document.getElementById('navbar').classList.remove('hidden');
+                document.getElementById('app-page').classList.add('active');
+            }
+            if(state.theme === 'light') toggleTheme();
+            render();
+        };
     </script>
 </body>
 </html>
