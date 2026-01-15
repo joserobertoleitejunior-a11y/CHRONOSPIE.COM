@@ -3,123 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChronosPie - Gestão de Tempo</title>
+    <title>ChronosPie - Mastery OS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;600;900&display=swap" rel="stylesheet">
     <style>
+        :root { --neon: #22d3ee; --gold: #fbbf24; }
+        body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .font-tech { font-family: 'Orbitron', sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(34, 211, 238, 0.1); border-radius: 2rem; }
+        .nav-btn { transition: 0.3s; opacity: 0.3; text-transform: uppercase; font-size: 9px; font-weight: 900; letter-spacing: 1px; }
+        .nav-btn.active { opacity: 1; color: var(--neon); }
         .page { display: none; }
-        .page.active { display: block; }
-        body { background-color: #f3f4f6; }
+        .page.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-<body class="p-4">
+<body class="min-h-screen pb-28">
 
-    <section id="dashboard" class="page active max-w-md mx-auto space-y-6">
-        <h1 class="text-2xl font-bold text-center text-gray-800">ChronosPie</h1>
+    <header class="p-6 flex justify-between items-center max-w-md mx-auto">
+        <div class="flex items-center gap-2">
+            <div class="w-2 h-2 bg-cyan-500 rounded-full animate-pulse shadow-[0_0_8px_#22d3ee]"></div>
+            <p id="system-msg" class="text-[9px] font-bold text-slate-500 uppercase tracking-widest italic">Sistema de Auditoria Ativo</p>
+        </div>
+        <h1 class="font-tech text-lg italic tracking-tighter">CHRONOS<span class="text-cyan-400">PIE</span></h1>
+    </header>
+
+    <main class="max-w-md mx-auto px-4">
         
-        <div class="bg-white p-6 rounded-2xl shadow-lg text-center">
-            <canvas id="timeChart" class="mx-auto"></canvas>
-            <p id="percentageText" class="text-3xl font-black mt-4 text-blue-600">0%</p>
-            <p class="text-sm text-gray-500 uppercase font-bold tracking-wider">Eficiência do Dia</p>
-        </div>
-
-        <div class="bg-white p-6 rounded-2xl shadow-md space-y-4">
-            <input type="text" id="taskName" placeholder="O que você fez?" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-            <div class="flex gap-2">
-                <input type="number" id="taskHours" placeholder="Horas" class="w-1/2 p-3 border rounded-xl text-center">
-                <input type="number" id="taskMins" placeholder="Min" class="w-1/2 p-3 border rounded-xl text-center">
+        <section id="page-app" class="page active space-y-4">
+            <div class="glass p-6 text-center">
+                <div class="relative inline-block">
+                    <canvas id="chart" width="180" height="180"></canvas>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <span id="pct" class="font-tech text-3xl font-black text-white">0%</span>
+                        <span class="text-[7px] text-cyan-500 font-bold uppercase tracking-widest">Alocação</span>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-between text-[10px] font-bold text-slate-400 px-4">
+                    <span>STATUS: <span class="text-white">OPERACIONAL</span></span>
+                    <span>DISPONÍVEL: <span id="time-left" class="text-cyan-400">24h 00m</span></span>
+                </div>
             </div>
-            <button onclick="addTask()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Sincronizar Atividade</button>
-        </div>
 
-        <div id="taskList" class="space-y-2 pb-24"></div>
-    </section>
+            <div class="glass p-6 space-y-4">
+                <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Nova Entrada de Dados</p>
+                <input type="text" id="taskName" placeholder="Identificar Atividade..." class="w-full bg-slate-900/50 border border-slate-800 p-4 rounded-2xl outline-none focus:border-cyan-500 text-sm font-bold placeholder:text-slate-700">
+                
+                <div class="grid grid-cols-4 gap-2">
+                    <button onclick="quickAdd(15, 'Reset Mental')" class="bg-slate-900 border border-slate-800 py-2 rounded-xl text-[9px] font-bold">15m</button>
+                    <button onclick="quickAdd(60, 'Foco Profundo')" class="bg-slate-900 border border-slate-800 py-2 rounded-xl text-[9px] font-bold">1h</button>
+                    <button onclick="quickAdd(240, 'Bloco de Execução')" class="bg-slate-900 border border-slate-800 py-2 rounded-xl text-[9px] font-bold">4h</button>
+                    <button onclick="quickAdd(480, 'Recuperação')" class="bg-slate-900 border border-slate-800 py-2 rounded-xl text-[9px] font-bold text-cyan-400">8h</button>
+                </div>
 
-    <section id="auditoria" class="page max-w-md mx-auto space-y-6">
-        <div class="bg-white p-8 rounded-2xl shadow-lg text-center space-y-4">
-            <h2 class="text-xl font-bold text-gray-800">Relatório de Auditoria</h2>
-            <p class="text-gray-600">O seu tempo é valioso. Para acessar a análise profunda de dados e métricas de desempenho, realize o pagamento via PIX.</p>
-            <div class="bg-gray-100 p-4 rounded-xl border-2 border-dashed border-gray-300">
-                <p class="text-xs font-bold text-gray-400 mb-2 uppercase">Chave PIX (Copia e Cola)</p>
-                <p class="text-sm font-mono font-bold break-all">42613586893</p>
-                <button onclick="alert('Chave copiada!')" class="mt-3 w-full bg-black text-white py-2 rounded-lg text-xs font-bold uppercase">Copiar Chave</button>
+                <div class="flex gap-2">
+                    <input type="number" id="h" placeholder="Horas" class="w-1/2 bg-slate-900/50 border border-slate-800 p-4 rounded-2xl text-center font-tech text-xs">
+                    <input type="number" id="m" placeholder="Min" class="w-1/2 bg-slate-900/50 border border-slate-800 p-4 rounded-2xl text-center font-tech text-xs">
+                </div>
+                
+                <button onclick="add()" class="w-full bg-cyan-500 text-slate-950 font-black py-4 rounded-2xl shadow-lg shadow-cyan-500/20 active:scale-95 transition-all text-xs uppercase tracking-widest">Sincronizar Ciclo</button>
             </div>
-            <p class="text-[10px] text-gray-400 italic text-center">Acesso liberado automaticamente após confirmação.</p>
-        </div>
-    </section>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around p-4 shadow-2xl">
-        <button onclick="showTab('dashboard')" class="text-blue-600 font-bold">Início</button>
-        <button onclick="showTab('auditoria')" class="text-gray-400 font-bold">Auditoria</button>
+            <div id="list" class="space-y-2 pb-6"></div>
+        </section>
+
+        <section id="page-pro" class="page space-y-4">
+            <div class="glass p-8 space-y-6">
+                <div id="pro-lock" class="text-center">
+                    <h3 class="font-tech text-yellow-500 text-lg tracking-widest uppercase">Acesso Restrito</h3>
+                    <p class="text-[11px] text-slate-400 mt-2 leading-relaxed italic">Desbloqueie a Auditoria de IA para identificar vazamentos de tempo e otimizar seu rendimento.</p>
+                    
+                    <div class="mt-8 bg-black/40 p-6 rounded-[2.5rem] border border-yellow-500/20">
+                        <p class="text-[9px] text-slate-500 font-bold uppercase mb-4 tracking-tighter italic">Transferência via PIX (CPF):</p>
+                        <p class="text-xl font-tech text-white mb-6">42613586893</p>
+                        <button onclick="copyPix()" class="w-full bg-white text-black py-3 rounded-xl font-bold text-xs uppercase mb-6 active:scale-95 transition-all">Copiar Chave</button>
+                        
+                        <div class="flex gap-2">
+                            <input type="text" id="key" placeholder="Código de Acesso" class="w-2/3 bg-slate-950 border border-slate-800 rounded-xl px-4 text-[10px] font-bold">
+                            <button onclick="unlock()" class="w-1/3 bg-yellow-500 text-black rounded-xl font-bold text-[10px] uppercase">Liberar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pro-active" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b border-yellow-500/20 pb-4">
+                        <h3 class="font-tech text-yellow-500 text-sm">AUDITORIA DE IA</h3>
+                        <span class="text-[8px] bg-yellow-500 text-black px-2 py-0.5 rounded font-black">PREMIUM</span>
+                    </div>
+                    <div id="ai-feedback" class="space-y-4"></div>
+                    <button onclick="shareApp()" class="w-full border border-cyan-500/30 text-cyan-400 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest">Partilhar Métrica com Operadores</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-profile" class="page space-y-4">
+            <div class="glass p-8 space-y-8">
+                <div class="flex items-center gap-5">
+                    <div class="w-16 h-16 bg-gradient-to-br from-cyan-600 to-blue-900 rounded-3xl flex items-center justify-center font-tech text-xl shadow-[0_0_20px_rgba(8,145,178,0.3)] border border-cyan-400/30">ID</div>
+                    <div>
+                        <h2 id="disp-name" class="font-black text-xl italic uppercase tracking-tighter">Operador</h2>
+                        <p id="disp-rank" class="text-[8px] font-bold text-slate-500 uppercase tracking-[0.4em]">Classe: Recruta</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-black/60 p-5 rounded-3xl border border-white/5">
+                        <p class="text-[7px] text-slate-500 font-bold uppercase mb-1">Dias de Operação</p>
+                        <p id="life-days" class="font-tech text-lg text-white">---</p>
+                    </div>
+                    <div class="bg-black/60 p-5 rounded-3xl border border-white/5">
+                        <p class="text-[7px] text-slate-500 font-bold uppercase mb-1">Sincronizações</p>
+                        <p id="total-logs" class="font-tech text-lg text-white">0</p>
+                    </div>
+                </div>
+
+                <div class="space-y-5 pt-4">
+                    <div class="group">
+                        <label class="text-[8px] text-slate-600 font-black uppercase tracking-widest ml-1">Assinatura do Operador</label>
+                        <input type="text" id="p-name" oninput="saveP()" placeholder="Nome..." class="w-full bg-transparent border-b border-slate-800 p-2 text-sm font-bold text-cyan-400 outline-none focus:border-cyan-400 transition-all">
+                    </div>
+                    <div class="group">
+                        <label class="text-[8px] text-slate-600 font-black uppercase tracking-widest ml-1">Data de Início</label>
+                        <input type="date" id="p-birth" oninput="saveP()" class="w-full bg-transparent border-b border-slate-800 p-2 text-sm font-bold text-cyan-400 outline-none">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md glass h-20 flex justify-around items-center px-4 z-50 border-t border-cyan-500/20 shadow-2xl">
+        <button onclick="tab('page-app', this)" class="nav-btn active flex flex-col items-center">
+            <span class="mb-1 text-lg">⚙️</span>
+            <span>Comando</span>
+        </button>
+        <button onclick="tab('page-pro', this)" class="nav-btn flex flex-col items-center">
+            <span class="mb-1 text-lg">🧠</span>
+            <span>Auditoria</span>
+        </button>
+        <button onclick="tab('page-profile', this)" class="nav-btn flex flex-col items-center">
+            <span class="mb-1 text-lg">👤</span>
+            <span>Identidade</span>
+        </button>
     </nav>
 
     <script>
-        let activities = [];
-        let myChart;
+        let data = JSON.parse(localStorage.getItem('cp_final_v10') || '[]');
+        let isPro = localStorage.getItem('cp_pro_v10') === 'true';
+        let chart;
 
-        function showTab(id) {
+        const protocols = [
+            "Protocolo 01: O tempo é o recurso mais escasso.",
+            "Protocolo 02: Elimine distrações ou elas eliminarão seus sonhos.",
+            "Protocolo 03: Foco não é dizer sim, é dizer não.",
+            "Protocolo 04: A consistência vence o talento."
+        ];
+
+        function tab(id, btn) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
         }
 
-        function addTask() {
-            const name = document.getElementById('taskName').value;
-            const h = parseInt(document.getElementById('taskHours').value || 0);
-            const m = parseInt(document.getElementById('taskMins').value || 0);
-            const totalMins = (h * 60) + m;
+        function shareApp() {
+            const text = "Estou auditando minha performance com o ChronosPie Mastery OS. Controle total: " + window.location.href;
+            if (navigator.share) navigator.share({ title: 'ChronosPie', text: text, url: window.location.href });
+            else window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`);
+        }
 
-            if (name && totalMins > 0) {
-                activities.push({ name, mins: totalMins });
-                updateUI();
-                document.getElementById('taskName').value = '';
-                document.getElementById('taskHours').value = '';
-                document.getElementById('taskMins').value = '';
+        function quickAdd(mins, name) {
+            if(!isPro && data.length >= 3) return alert("Limite Free: Auditoria bloqueada em 3 logs.");
+            data.push({ n: name, v: mins, c: `hsl(${Math.random()*360}, 70%, 50%)`, d: new Date().toLocaleTimeString() });
+            save();
+        }
+
+        function add() {
+            const name = document.getElementById('taskName').value;
+            const h = parseInt(document.getElementById('h').value || 0), m = parseInt(document.getElementById('m').value || 0);
+            const total = (h * 60) + m;
+            if(!isPro && data.length >= 3) return alert("Limite de Auditoria atingido.");
+            if(name && total > 0) {
+                data.push({ n: name, v: total, c: `hsl(${Math.random()*360}, 70%, 50%)`, d: new Date().toLocaleTimeString() });
+                save();
+                document.getElementById('taskName').value = ''; document.getElementById('h').value = ''; document.getElementById('m').value = '';
             }
         }
 
-        function updateUI() {
-            const list = document.getElementById('taskList');
+        function save() { localStorage.setItem('cp_final_v10', JSON.stringify(data)); render(); }
+        function del(i) { data.splice(i, 1); save(); }
+
+        function render() {
+            const list = document.getElementById('list');
             list.innerHTML = '';
-            let totalUsed = activities.reduce((acc, curr) => acc + curr.mins, 0);
-            
-            // 1440 mins é o total do dia
-            let percent = ((totalUsed / 1440) * 100).toFixed(0);
-            document.getElementById('percentageText').innerText = percent + '%';
+            let total = data.reduce((s, a) => s + a.v, 0);
+            document.getElementById('time-left').innerText = `${Math.floor((1440-total)/60)}h ${(1440-total)%60}m`;
+            document.getElementById('pct').innerText = Math.min(100, (total/14.4)).toFixed(0) + '%';
+            document.getElementById('total-logs').innerText = data.length;
+            document.getElementById('system-msg').innerText = protocols[Math.floor(Math.random() * protocols.length)];
 
-            activities.slice().reverse().forEach(act => {
-                list.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl shadow-sm flex justify-between items-center border-l-4 border-blue-500">
-                        <span class="font-bold text-gray-700">${act.name}</span>
-                        <span class="text-blue-600 font-bold">${act.mins} min</span>
-                    </div>
-                `;
+            data.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = "glass p-4 flex justify-between items-center border-l-2 mb-2 bg-slate-900/40";
+                div.style.borderColor = item.c;
+                div.innerHTML = `<div><p class="text-[9px] font-black uppercase text-white tracking-widest">${item.n}</p><p class="text-[7px] text-slate-500 font-bold italic">${Math.floor(item.v/60)}h ${item.v%60}m</p></div><button onclick="del(${i})" class="text-slate-800 p-2">✕</button>`;
+                list.prepend(div);
             });
 
-            updateChart(totalUsed);
+            if(isPro) {
+                document.getElementById('pro-lock').classList.add('hidden');
+                document.getElementById('pro-active').classList.remove('hidden');
+                genInsights(total);
+            }
+            updateChart(total);
+            updateProfile();
         }
 
-        function updateChart(totalUsed) {
-            const ctx = document.getElementById('timeChart').getContext('2d');
-            if (myChart) myChart.destroy();
-            
-            myChart = new Chart(ctx, {
+        function genInsights(total) {
+            const box = document.getElementById('ai-feedback');
+            let txt = total > 900 ? "⚠️ LATÊNCIA CRÍTICA: Sobrecarga detectada. Protocolo de descanso imediato sugerido." :
+                      total < 400 ? "ℹ️ BAIXO RENDIMENTO: Capacidade operacional ociosa. Aumente o foco." :
+                                   "🛡️ OTIMIZAÇÃO: Fluxo de alocação de tempo dentro da média de alta performance.";
+            box.innerHTML = `<div class='p-5 bg-white/5 rounded-3xl border border-white/5 text-[11px] leading-relaxed text-slate-300'>${txt}</div>`;
+        }
+
+        function saveP() {
+            const p = { n: document.getElementById('p-name').value, b: document.getElementById('p-birth').value };
+            localStorage.setItem('cp_profile_v10', JSON.stringify(p));
+            updateProfile();
+        }
+
+        function updateProfile() {
+            const p = JSON.parse(localStorage.getItem('cp_profile_v10') || '{}');
+            if(p.n) { document.getElementById('disp-name').innerText = p.n; document.getElementById('p-name').value = p.n; }
+            if(p.b) {
+                document.getElementById('p-birth').value = p.b;
+                const days = Math.floor((new Date() - new Date(p.b)) / 86400000);
+                document.getElementById('life-days').innerText = days.toLocaleString();
+                document.getElementById('disp-rank').innerText = days > 12000 ? "Classe: Mestre Chronos" : "Classe: Estrategista";
+            }
+        }
+
+        function updateChart(total) {
+            const ctx = document.getElementById('chart').getContext('2d');
+            if(chart) chart.destroy();
+            chart = new Chart(ctx, {
                 type: 'doughnut',
-                data: {
-                    datasets: [{
-                        data: [...activities.map(a => a.mins), 1440 - totalUsed],
-                        backgroundColor: [...activities.map(() => '#3b82f6'), '#e5e7eb'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    cutout: '80%',
-                    plugins: { legend: { display: false } }
-                }
+                data: { datasets: [{ data: [...data.map(a => a.v), total < 1440 ? 1440-total : 0], backgroundColor: [...data.map(a => a.c), '#0f172a'], borderWidth: 0 }] },
+                options: { cutout: '82%', plugins: { legend: { display: false } } }
             });
         }
 
-        // Inicia gráfico vazio
-        updateChart(0);
+        function copyPix() { navigator.clipboard.writeText('42613586893'); alert("CHAVE PIX COPIADA."); }
+        function unlock() { if(document.getElementById('key').value.toUpperCase()==='PIX777'){ localStorage.setItem('cp_pro_v10','true'); location.reload(); }}
+
+        window.onload = render;
     </script>
 </body>
 </html>
