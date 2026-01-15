@@ -3,26 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChronosPie - Life Mapping</title>
+    <title>ChronosPie</title>
+    
+    <meta name="theme-color" content="#020617">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJkZWZhdWx0X2xvY2FsZSI6ICJwdCIsCiAgIm5hbWUiOiAiQ2hyb25vc1BpZSIsCiAgInNob3J0X25hbWUiOiAiQ2hyb25vcyIsCiAgImRlc2NyaXB0aW9uIjogIk1hcGVhbWVudG8gZGUgVGVtcG8iLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzAyMDYxNyIsCiAgInRoZW1lX2NvbG9yIjogIzAyMDYxNyIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImh0dHBzOi8vY2RuLWljb25zLXBuZy5mbGF0aWNvbi5jb20vNTEyLzI1LzI1NjU3LnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIiwKICAgICAgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIgogICAgfQogIF0KfQ==">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
         :root { --bg: #020617; --card: rgba(30, 41, 59, 0.8); --text: #f8fafc; --cyan: #22d3ee; }
         .light-mode { --bg: #f1f5f9; --card: rgba(255, 255, 255, 0.9); --text: #0f172a; }
-        
         body { background-color: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; transition: 0.3s; overflow-x: hidden; }
         .glass-card { background: var(--card); backdrop-filter: blur(20px); border: 1px solid rgba(34, 211, 238, 0.15); border-radius: 2.5rem; }
-        
-        /* Tutorial Animado */
         #onboarding { position: fixed; inset: 0; z-index: 100; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
         .step { display: none; text-align: center; animation: slideIn 0.5s ease; }
         .step.active { display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
-
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
         .nav-btn { opacity: 0.5; transition: 0.3s; font-weight: 800; }
         .nav-btn.active { opacity: 1; color: var(--cyan); }
     </style>
@@ -34,21 +36,13 @@
             <div class="text-6xl mb-4">🥧</div>
             <h1 class="text-4xl font-black italic uppercase">Bem-vindo ao <span class="text-cyan-400">ChronosPie</span></h1>
             <p class="text-slate-400">Seu tempo é uma torta. Vamos ver como você está dividindo os pedaços?</p>
-            <button onclick="nextStep(2)" class="bg-cyan-500 text-black px-8 py-4 rounded-2xl font-black uppercase">Bora Começar!</button>
+            <button onclick="nextStep(2)" class="bg-cyan-500 text-black px-8 py-4 rounded-2xl font-black uppercase shadow-lg shadow-cyan-500/20">Próximo</button>
         </div>
-
         <div id="step-2" class="step space-y-6">
-            <div class="text-6xl mb-4">✍️</div>
-            <h1 class="text-3xl font-black uppercase">Mapeamento Sem Erro</h1>
-            <p class="text-slate-400">Fez academia? Trabalhou? Dormiu? É só digitar e registrar o tempo. Simples assim.</p>
-            <button onclick="nextStep(3)" class="bg-cyan-500 text-black px-8 py-4 rounded-2xl font-black uppercase">Entendi!</button>
-        </div>
-
-        <div id="step-3" class="step space-y-6">
-            <div class="text-6xl mb-4">🎯</div>
-            <h1 class="text-3xl font-black uppercase">Domine seu Dia</h1>
-            <p class="text-slate-400">O gráfico te mostra onde seu tempo está "sumindo". O objetivo? 100% de consciência!</p>
-            <button onclick="finishTutorial()" class="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-8 py-4 rounded-2xl font-black uppercase">Acessar Meu Mapa 🚀</button>
+            <div class="text-6xl mb-4">📲</div>
+            <h1 class="text-3xl font-black uppercase">Instale no Celular</h1>
+            <p class="text-slate-400">Clique nos três pontinhos do navegador e em <b>"Instalar Aplicativo"</b> para ter o Chronos na sua tela inicial!</p>
+            <button onclick="finishTutorial()" class="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-8 py-4 rounded-2xl font-black uppercase">Começar Agora</button>
         </div>
     </div>
 
@@ -65,21 +59,19 @@
                 <canvas id="chart" style="max-width: 160px;"></canvas>
                 <div class="absolute inset-0 flex flex-col items-center justify-center mt-2">
                     <span id="pct" class="text-3xl font-black">0%</span>
-                    <span id="t-ocupado" class="text-[8px] uppercase font-bold opacity-50">Iniciando...</span>
+                    <span id="t-ocupado" class="text-[8px] uppercase font-bold opacity-50">Status</span>
                 </div>
             </div>
-            <button onclick="share()" class="text-[10px] font-bold text-green-500 uppercase flex items-center justify-center gap-2 mx-auto">
-                WhatsApp 📲
-            </button>
+            <button onclick="share()" class="text-[10px] font-bold text-green-500 uppercase flex items-center justify-center gap-2 mx-auto">WhatsApp 📲</button>
         </div>
 
         <div class="glass-card p-6 space-y-3">
-            <input type="text" id="taskName" placeholder="O que você fez?" class="w-full p-4 rounded-2xl bg-black/20 border border-white/10 outline-none focus:border-cyan-500">
+            <input type="text" id="taskName" placeholder="O que você fez?" class="w-full p-4 rounded-2xl bg-black/20 border border-white/10 outline-none text-white">
             <div class="flex gap-2">
-                <input type="number" id="h" placeholder="Horas" class="w-1/2 p-4 rounded-2xl bg-black/20 border border-white/10 text-center">
-                <input type="number" id="m" placeholder="Min" class="w-1/2 p-4 rounded-2xl bg-black/20 border border-white/10 text-center">
+                <input type="number" id="h" placeholder="Horas" class="w-1/2 p-4 rounded-2xl bg-black/20 border border-white/10 text-center text-white">
+                <input type="number" id="m" placeholder="Min" class="w-1/2 p-4 rounded-2xl bg-black/20 border border-white/10 text-center text-white">
             </div>
-            <button onclick="add()" id="btn-add" class="w-full bg-cyan-500 text-black py-4 rounded-2xl font-black uppercase">Registrar Atividade</button>
+            <button onclick="add()" class="w-full bg-cyan-500 text-black py-4 rounded-2xl font-black uppercase shadow-lg">Registrar</button>
         </div>
         <ul id="list" class="space-y-2 max-h-48 overflow-y-auto"></ul>
     </div>
@@ -88,161 +80,84 @@
         <div class="glass-card p-8 text-center space-y-6">
             <h2 class="text-xl font-black uppercase text-cyan-400 italic">Upgrade Pro</h2>
             <div id="pro-off" class="space-y-4">
-                <p class="text-xs opacity-70">Desbloqueie o guia de performance e registros ilimitados.</p>
                 <div class="p-4 bg-black/20 rounded-3xl border border-white/5">
-                    <p class="text-[10px] font-bold opacity-30 mb-2 uppercase">Pix do Desenvolvedor</p>
+                    <p class="text-[10px] font-bold opacity-30 mb-2 uppercase">Pix de Apoio</p>
                     <p class="text-lg font-mono font-bold">42613586893</p>
                     <button onclick="copy()" class="text-cyan-400 text-[10px] font-bold uppercase mt-2">Copiar Chave</button>
                 </div>
-                <input type="text" id="key" placeholder="Insira o código" class="w-full p-3 rounded-xl bg-black/20 text-center border border-white/10">
+                <input type="text" id="key" placeholder="Código" class="w-full p-3 rounded-xl bg-black/20 text-center border border-white/10 text-white">
                 <button onclick="unlock()" class="w-full bg-white text-black py-3 rounded-xl font-bold uppercase text-xs">Ativar</button>
             </div>
-            <div id="pro-on" class="hidden text-left space-y-4">
-                <p class="text-yellow-400 font-bold uppercase text-center">🚀 Modo Pro Ativo</p>
-                <p class="text-[11px] opacity-80 leading-relaxed bg-white/5 p-4 rounded-2xl">Dica Pro: O tempo que você gasta registrando não deve ser maior que o tempo executando. Use o ChronosPie 3x ao dia para auditorias rápidas.</p>
-            </div>
+            <div id="pro-on" class="hidden text-center text-yellow-400 font-bold uppercase">🚀 Licença Pro Ativada</div>
         </div>
     </div>
 
     <div id="perfil-page" class="page max-w-md w-full">
-        <div class="glass-card p-8 space-y-6 text-center">
+        <div class="glass-card p-8 text-center space-y-6">
             <div class="w-20 h-20 bg-cyan-500/10 rounded-full mx-auto flex items-center justify-center text-3xl mb-2 border border-cyan-500/20">😎</div>
-            <h2 id="p-name" class="text-xl font-bold uppercase italic">Usuário</h2>
-            <input type="text" id="nameInput" oninput="saveName(this.value)" placeholder="Como quer ser chamado?" class="w-full p-3 rounded-xl bg-black/20 border border-white/10 text-center">
-            
-            <select onchange="changeLang(this.value)" class="w-full p-3 rounded-xl bg-black/20 border border-white/10 text-xs">
+            <input type="text" id="nameInput" oninput="saveName(this.value)" placeholder="Seu Nome" class="w-full p-3 rounded-xl bg-black/20 border border-white/10 text-center text-white">
+            <select onchange="changeLang(this.value)" class="w-full p-3 rounded-xl bg-black/20 border border-white/10 text-xs text-white">
                 <option value="pt">Português 🇧🇷</option>
                 <option value="en">English 🇺🇸</option>
                 <option value="es">Español 🇪🇸</option>
             </select>
-            
-            <button onclick="reset()" class="text-[9px] opacity-30 font-bold uppercase tracking-[4px]">Zerar tudo</button>
+            <button onclick="reset()" class="text-[9px] opacity-30 font-bold uppercase tracking-[4px]">Zerar Tudo</button>
         </div>
     </div>
 
     <nav id="navbar" class="hidden fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-2xl h-20 flex justify-around items-center px-4 border-t border-white/5 z-50">
-        <button onclick="showPage('app-page', this)" class="nav-btn active flex flex-col items-center">
-            <span class="text-[10px] uppercase" id="nav-1">Mapa</span>
-        </button>
-        <button onclick="showPage('pro-page', this)" class="nav-btn flex flex-col items-center">
-            <span class="text-[10px] uppercase" id="nav-2">Upgrade</span>
-        </button>
-        <button onclick="showPage('perfil-page', this)" class="nav-btn flex flex-col items-center">
-            <span class="text-[10px] uppercase" id="nav-3">Eu</span>
-        </button>
+        <button onclick="showPage('app-page', this)" class="nav-btn active flex flex-col items-center"><span class="text-[10px] uppercase">Mapa</span></button>
+        <button onclick="showPage('pro-page', this)" class="nav-btn flex flex-col items-center"><span class="text-[10px] uppercase">Upgrade</span></button>
+        <button onclick="showPage('perfil-page', this)" class="nav-btn flex flex-col items-center"><span class="text-[10px] uppercase">Eu</span></button>
     </nav>
 
     <script>
-        let state = JSON.parse(localStorage.getItem('cp_final_state')) || {
+        // REGISTRO DO SERVICE WORKER PARA FUNCIONAR OFFLINE (APP)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZSA9PiBlLndhaXRVbnRpbChjYWNoZXMub3BlbignY2hyb25vcycpLnRoZW4oYyA9PiBjLmFkZEFsbChbJy4nLCAnaW5kZXguaHRtbCddKSkpKTsKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGUgPT4gZS5yZXNwb25kV2l0aChjYWNoZXMubWF0Y2goZS5yZXF1ZXN0KS50aGVuKHIgPT4gciB8fCBmZXRjaChlLnJlcXVlc3QpKSkpOw==');
+        }
+
+        let state = JSON.parse(localStorage.getItem('cp_pwa_state')) || {
             name: 'Usuário', tasks: [], pro: false, theme: 'dark', lang: 'pt', tutorialSeen: false
         };
 
         const i18n = {
-            pt: { add: "Registrar Atividade", busy: "Ocupado", nav1: "Mapa", nav2: "Upgrade", nav3: "Eu", share: "Mapeei meu dia no ChronosPie! " },
-            en: { add: "Register Task", busy: "Busy", nav1: "Map", nav2: "Upgrade", nav3: "Me", share: "Mapping my day with ChronosPie! " },
-            es: { add: "Registrar", busy: "Ocupado", nav1: "Mapa", nav2: "Upgrade", nav3: "Yo", share: "¡Mapeando mi día en ChronosPie! " }
+            pt: { add: "Registrar", busy: "Ocupado", share: "Mapeei meu dia no ChronosPie! " },
+            en: { add: "Register", busy: "Busy", share: "Mapping my day with ChronosPie! " },
+            es: { add: "Registrar", busy: "Ocupado", share: "¡Mapeando mi día! " }
         };
 
-        function save() { localStorage.setItem('cp_final_state', JSON.stringify(state)); render(); }
-
-        function nextStep(s) {
-            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-            document.getElementById('step-' + s).classList.add('active');
-        }
-
-        function finishTutorial() {
-            state.tutorialSeen = true;
-            document.getElementById('onboarding').style.display = 'none';
-            document.getElementById('header').classList.remove('hidden');
-            document.getElementById('navbar').classList.remove('hidden');
-            document.getElementById('app-page').classList.add('active');
-            save();
-        }
-
-        function toggleTheme() {
-            state.theme = state.theme === 'dark' ? 'light' : 'dark';
-            document.body.classList.toggle('light-mode', state.theme === 'light');
-            document.getElementById('theme-icon').innerText = state.theme === 'dark' ? '🌙' : '☀️';
-            save();
-        }
-
-        function showPage(id, btn) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-
-        function add() {
-            if(!state.pro && state.tasks.length >= 3) return alert("Limite Free: 3 itens. Ative o Pro!");
-            const n = document.getElementById('taskName').value;
-            const h = parseInt(document.getElementById('h').value || 0), m = parseInt(document.getElementById('m').value || 0);
-            if(n && (h+m) > 0) {
-                state.tasks.push({n, v: (h*60)+m, c: `hsl(${Math.random()*360}, 60%, 50%)`});
-                document.getElementById('taskName').value = '';
-                save();
-            }
-        }
-
-        function unlock() {
-            if(document.getElementById('key').value.toUpperCase() === 'PIX777') {
-                state.pro = true; save(); alert("MODO PRO ATIVADO!");
-            } else alert("Código incorreto!");
-        }
-
-        function saveName(v) { state.name = v; document.getElementById('p-name').innerText = v; save(); }
+        function save() { localStorage.setItem('cp_pwa_state', JSON.stringify(state)); render(); }
+        function nextStep(s) { document.querySelectorAll('.step').forEach(el => el.classList.remove('active')); document.getElementById('step-' + s).classList.add('active'); }
+        function finishTutorial() { state.tutorialSeen = true; document.getElementById('onboarding').style.display = 'none'; document.getElementById('header').classList.remove('hidden'); document.getElementById('navbar').classList.remove('hidden'); document.getElementById('app-page').classList.add('active'); save(); }
+        function toggleTheme() { state.theme = state.theme === 'dark' ? 'light' : 'dark'; document.body.classList.toggle('light-mode', state.theme === 'light'); document.getElementById('theme-icon').innerText = state.theme === 'dark' ? '🌙' : '☀️'; save(); }
+        function showPage(id, btn) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+        function add() { if(!state.pro && state.tasks.length >= 3) return alert("Limite Free atingido!"); const n = document.getElementById('taskName').value; const h = parseInt(document.getElementById('h').value || 0), m = parseInt(document.getElementById('m').value || 0); if(n && (h+m) > 0) { state.tasks.push({n, v: (h*60)+m, c: `hsl(${Math.random()*360}, 60%, 50%)`}); document.getElementById('taskName').value = ''; save(); } }
+        function unlock() { if(document.getElementById('key').value.toUpperCase() === 'PIX777') { state.pro = true; save(); alert("MODO PRO ATIVADO!"); } else alert("Código incorreto!"); }
+        function saveName(v) { state.name = v; save(); }
         function changeLang(l) { state.lang = l; save(); }
         function copy() { navigator.clipboard.writeText('42613586893'); alert("CPF Copiado!"); }
-        function reset() { if(confirm("Deseja apagar tudo?")) { state.tasks = []; save(); } }
-
-        function share() {
-            let total = state.tasks.reduce((s, a) => s + a.v, 0);
-            let txt = i18n[state.lang].share + `Foco em ${Math.min(100, (total/14.4)).toFixed(0)}% do dia.`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
-        }
+        function reset() { if(confirm("Apagar tudo?")) { state.tasks = []; save(); } }
+        function share() { let total = state.tasks.reduce((s, a) => s + a.v, 0); let txt = i18n[state.lang].share + `Foco em ${Math.min(100, (total/14.4)).toFixed(0)}% do dia.`; window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`); }
 
         let chart;
         function render() {
-            const l = i18n[state.lang];
-            document.getElementById('btn-add').innerText = l.add;
-            document.getElementById('nav-1').innerText = l.nav1;
-            document.getElementById('nav-2').innerText = l.nav2;
-            document.getElementById('nav-3').innerText = l.nav3;
-
             const list = document.getElementById('list'); list.innerHTML = '';
             let total = state.tasks.reduce((s, a) => s + a.v, 0);
-            document.getElementById('t-ocupado').innerText = `${l.busy}: ${Math.floor(total/60)}h ${total%60}m`;
+            document.getElementById('t-ocupado').innerText = `${i18n[state.lang].busy}: ${Math.floor(total/60)}h ${total%60}m`;
             document.getElementById('pct').innerText = Math.min(100, (total/14.4)).toFixed(0) + '%';
-            
             state.tasks.slice().reverse().forEach((t) => {
-                list.innerHTML += `<li class="flex justify-between items-center p-4 glass-card !rounded-2xl text-[11px] font-bold">
-                    <span style="color:${t.c}">${t.n.toUpperCase()}</span>
-                    <span class="opacity-50">${Math.floor(t.v/60)}H ${t.v%60}M</span>
-                </li>`;
+                list.innerHTML += `<li class="flex justify-between items-center p-4 glass-card !rounded-2xl text-[11px] font-bold"><span style="color:${t.c}">${t.n.toUpperCase()}</span><span class="opacity-50">${Math.floor(t.v/60)}H ${t.v%60}M</span></li>`;
             });
-
-            if(state.pro) {
-                document.getElementById('pro-off').classList.add('hidden');
-                document.getElementById('pro-on').classList.remove('hidden');
-            }
-
+            if(state.pro) { document.getElementById('pro-off').classList.add('hidden'); document.getElementById('pro-on').classList.remove('hidden'); }
             const ctx = document.getElementById('chart').getContext('2d');
             if(chart) chart.destroy();
-            chart = new Chart(ctx, {
-                type: 'doughnut',
-                data: { datasets: [{ data: [...state.tasks.map(a => a.v), 1440-total], backgroundColor: [...state.tasks.map(a => a.c), '#1e293b'], borderWidth: 0 }] },
-                options: { cutout: '85%', plugins: { legend: { display: false } } }
-            });
+            chart = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: [...state.tasks.map(a => a.v), 1440-total], backgroundColor: [...state.tasks.map(a => a.c), '#1e293b'], borderWidth: 0 }] }, options: { cutout: '85%', plugins: { legend: { display: false } } } });
         }
 
         window.onload = () => {
-            if(state.tutorialSeen) {
-                document.getElementById('onboarding').style.display = 'none';
-                document.getElementById('header').classList.remove('hidden');
-                document.getElementById('navbar').classList.remove('hidden');
-                document.getElementById('app-page').classList.add('active');
-            }
-            if(state.theme === 'light') toggleTheme();
+            if(state.tutorialSeen) finishTutorial();
+            if(state.theme === 'light') document.body.classList.add('light-mode');
             render();
         };
     </script>
